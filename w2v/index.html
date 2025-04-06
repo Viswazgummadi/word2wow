@@ -1,0 +1,887 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>#word2vec</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: undefined; }
+.select-value-color-pink { background-color: rgba(225, 136, 179, 0.27); }
+.select-value-color-purple { background-color: rgba(168, 129, 197, 0.27); }
+.select-value-color-green { background-color: rgba(123, 183, 129, 0.27); }
+.select-value-color-gray { background-color: rgba(84, 72, 49, 0.15); }
+.select-value-color-transparentGray { background-color: undefined; }
+.select-value-color-translucentGray { background-color: undefined; }
+.select-value-color-orange { background-color: rgba(224, 124, 57, 0.27); }
+.select-value-color-brown { background-color: rgba(210, 162, 141, 0.35); }
+.select-value-color-red { background-color: rgba(244, 171, 159, 0.4); }
+.select-value-color-yellow { background-color: rgba(236, 191, 66, 0.39); }
+.select-value-color-blue { background-color: rgba(93, 165, 206, 0.27); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1cc89543-0c96-808c-9d04-f81f6aceb4c6" class="page sans"><header><h1 class="page-title">#word2vec</h1><p class="page-description"></p></header><div class="page-body"><h1 id="1cc89543-0c96-80e5-ae16-f77ba409dc94" class="">Word2Vec: A Comprehensive Guide to Understanding and Implementation</h1><p id="1cc89543-0c96-80b0-9c26-ff36ce188d60" class="">Word2Vec is a powerful technique in natural language processing (NLP) that transforms words into numerical vectors, allowing machines to understand the contextual meaning of words. Developed by researchers at Google in 2013, Word2Vec aims to capture semantic relationships between words based on their co-occurrence patterns in text data, enabling remarkable capabilities like the famous example &quot;king - man + woman = queen&quot;<a href="https://substack.com/home/post/p-143275665">1</a>. This comprehensive guide covers everything from the theoretical foundations to practical implementation of Word2Vec from scratch using basic libraries.</p><h2 id="1cc89543-0c96-80fb-a8e3-ead171f1eac8" class=""><strong>What is Word2Vec?</strong></h2><p id="1cc89543-0c96-80f5-8bd3-deea32a92854" class="">Word2Vec is a shallow neural network model that learns to represent words in a continuous vector space. The core idea behind word embeddings is to convert text to numerical data (vector space) and capture both semantic and syntactic meaning of words and their relationships with other words in a corpus<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a>. These word embeddings encode semantic relationships between words based on their contextual usage, following the principle that &quot;a word is characterized by the company it keeps&quot;<a href="https://substack.com/home/post/p-143275665">1</a>.</p><p id="1cc89543-0c96-8020-ac89-db04392e5201" class="">Word2Vec is not a singular algorithm but rather a family of model architectures and optimizations designed to learn word embeddings from large datasets<a href="https://www.tensorflow.org/text/tutorials/word2vec">7</a>. The resulting word vectors have proven successful on various downstream NLP tasks and can be visualized to show how semantically similar words cluster together in vector space.</p><h2 id="1cc89543-0c96-80b6-835d-e4f4e6d8d3c4" class=""><strong>Why Word Embeddings Matter</strong></h2><p id="1cc89543-0c96-8083-bef1-f7624499b0d4" class="">Traditional text representation methods like one-hot encoding treat each word as an independent entity with no inherent relationship to other words. Word embeddings solve this problem by:</p><ol type="1" id="1cc89543-0c96-80c9-9996-c2e7ecc213f0" class="numbered-list" start="1"><li>Representing words as dense vectors in a continuous space</li></ol><ol type="1" id="1cc89543-0c96-8076-ab3f-d0e808b3e241" class="numbered-list" start="2"><li>Capturing semantic relationships between words</li></ol><ol type="1" id="1cc89543-0c96-8058-aa57-e3c99d515169" class="numbered-list" start="3"><li>Reducing dimensionality compared to one-hot encoding</li></ol><ol type="1" id="1cc89543-0c96-8083-9156-f106300e197f" class="numbered-list" start="4"><li>Enabling mathematical operations on words that yield meaningful results</li></ol><ol type="1" id="1cc89543-0c96-808f-8847-d764f6ecce41" class="numbered-list" start="5"><li>Providing features that improve performance on many NLP tasks</li></ol><h2 id="1cc89543-0c96-8066-a44a-d93d4b72fbf3" class=""><strong>Word2Vec Architectures</strong></h2><p id="1cc89543-0c96-8037-883c-ff434d5657a3" class="">Word2Vec employs two main architectural approaches: Continuous Bag of Words (CBOW) and Skip-gram<a href="https://substack.com/home/post/p-143275665">1</a>. Let&#x27;s examine how each works.</p><h2 id="1cc89543-0c96-80cb-86c6-d71a9f642772" class=""><strong>Continuous Bag of Words (CBOW)</strong></h2><p id="1cc89543-0c96-808e-a7cc-fbdd7a6b52a6" class="">CBOW predicts a target word based on its surrounding context words. It takes a fixed-sized context window of words and tries to predict the target word in the middle of the window<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a>.</p><h2 id="1cc89543-0c96-8093-aed7-f6868a5060fd" class=""><strong>How CBOW Works:</strong></h2><ol type="1" id="1cc89543-0c96-806d-a29a-c4ca530e07f5" class="numbered-list" start="1"><li>Define a context window size (e.g., 2 words on each side)</li></ol><ol type="1" id="1cc89543-0c96-801d-97bc-dc042b08339f" class="numbered-list" start="2"><li>For each word position in the text:<ul id="1cc89543-0c96-80d8-9b36-cfb3e7bb8a5a" class="bulleted-list"><li style="list-style-type:disc">Use surrounding words as input</li></ul><ul id="1cc89543-0c96-806e-bad4-cca0603e72d2" class="bulleted-list"><li style="list-style-type:disc">Train the model to predict the center word</li></ul></li></ol><p id="1cc89543-0c96-807b-ba74-f45826131a2b" class="">For example, with the sentence &quot;I eat Pizza on Friday&quot; and window size 2:</p><ul id="1cc89543-0c96-8064-a220-d02ac8a88a59" class="bulleted-list"><li style="list-style-type:disc">Training example 1: Input: [&quot;I&quot;, &quot;pizza&quot;], Target: &quot;eat&quot;</li></ul><ul id="1cc89543-0c96-8020-8a30-ca5f76a71ae6" class="bulleted-list"><li style="list-style-type:disc">Training example 2: Input: [&quot;eat&quot;, &quot;on&quot;], Target: &quot;pizza&quot;</li></ul><ul id="1cc89543-0c96-80f3-be4e-f7b59aa99bdf" class="bulleted-list"><li style="list-style-type:disc">Training example 3: Input: [&quot;pizza&quot;, &quot;Friday&quot;], Target: &quot;on&quot;<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a></li></ul><p id="1cc89543-0c96-8024-8b43-ef79bfdd5b0c" class="">CBOW has three main layers: input layer, hidden layer, and output layer. The input layer represents the context words, the hidden layer creates the word embeddings, and the output layer predicts the probability of each word in the vocabulary being the target word.</p><h2 id="1cc89543-0c96-8047-a62d-e5d0ce3dfbe2" class=""><strong>Skip-gram</strong></h2><p id="1cc89543-0c96-8041-a89f-c0b89b477202" class="">Skip-gram works in the opposite direction of CBOW. It predicts the context words given a target word<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a>. The input to the skip-gram model is a target word, while the output is a set of context words.</p><h2 id="1cc89543-0c96-8004-943f-f90fd73765fb" class=""><strong>How Skip-gram Works:</strong></h2><ol type="1" id="1cc89543-0c96-8052-b174-db78b2f660d0" class="numbered-list" start="1"><li>Define a context window size (e.g., 2 words on each side)</li></ol><ol type="1" id="1cc89543-0c96-8037-aa34-c78e0fca91bf" class="numbered-list" start="2"><li>For each word position in the text:<ul id="1cc89543-0c96-80ec-9113-c5ea04263b6c" class="bulleted-list"><li style="list-style-type:disc">Use the center word as input</li></ul><ul id="1cc89543-0c96-80e8-9551-d66aed2b7470" class="bulleted-list"><li style="list-style-type:disc">Train the model to predict the surrounding context words</li></ul></li></ol><p id="1cc89543-0c96-8040-bbe9-d0aae4bb019f" class="">Using the same example sentence:</p><ul id="1cc89543-0c96-8051-a2de-ced3626573f3" class="bulleted-list"><li style="list-style-type:disc">Training example 1: Input: &quot;eat&quot;, Target: [&quot;I&quot;, &quot;pizza&quot;]</li></ul><ul id="1cc89543-0c96-8013-bda8-cd432a73e241" class="bulleted-list"><li style="list-style-type:disc">Training example 2: Input: &quot;pizza&quot;, Target: [&quot;eat&quot;, &quot;on&quot;]<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a></li></ul><p id="1cc89543-0c96-8063-a3f8-dbac6e77fb84" class="">Mathematically, the Skip-gram objective function sums the log probabilities of the surrounding n words to the left and right of the target word w_t:</p><p id="1cc89543-0c96-801b-9832-eb0a986f4a6b" class="">Jθ=1T∑t=1T∑−n≤j≤n,j≠0log⁡p(wj+t∣wt)<em>Jθ</em>=<em>T</em>1∑<em>t</em>=1<em>T</em>∑−<em>n</em>≤<em>j</em>≤<em>n</em>,<em>j</em>=0log<em>p</em>(<em>wj</em>+<em>t</em>∣<em>wt</em>)<a href="https://paperswithcode.com/method/skip-gram-word2vec">8</a></p><h2 id="1cc89543-0c96-8060-8c0d-dec97f6e8f69" class=""><strong>Comparing CBOW and Skip-gram</strong></h2><table id="1cc89543-0c96-8099-8882-f2bf1727d484" class="simple-table"><tbody><tr id="1cc89543-0c96-80fa-8f7a-c311a783d62d"><td id=";OoQ" class=""><strong>Feature</strong></td><td id="VBPk" class=""><strong>CBOW</strong></td><td id="}i?C" class=""><strong>Skip-gram</strong></td></tr><tr id="1cc89543-0c96-80c4-acb3-ca5b3e6fc70e"><td id=";OoQ" class="">Prediction task</td><td id="VBPk" class="">Predicts target word from context</td><td id="}i?C" class="">Predicts context words from target word</td></tr><tr id="1cc89543-0c96-80ed-b6c7-ca58722752d9"><td id=";OoQ" class="">Performance on frequent words</td><td id="VBPk" class="">Better</td><td id="}i?C" class="">Good</td></tr><tr id="1cc89543-0c96-80b2-a475-f68dce83fa3b"><td id=";OoQ" class="">Performance on rare words</td><td id="VBPk" class="">Not as good</td><td id="}i?C" class="">Better</td></tr><tr id="1cc89543-0c96-80c2-a1cd-d4a8d551fd6f"><td id=";OoQ" class="">Training speed</td><td id="VBPk" class="">Faster</td><td id="}i?C" class="">Slower</td></tr><tr id="1cc89543-0c96-8052-88e3-f6f395290e17"><td id=";OoQ" class="">Dataset size suitability</td><td id="VBPk" class="">Smaller datasets</td><td id="}i?C" class="">Larger datasets</td></tr><tr id="1cc89543-0c96-80ad-a8d6-d273cfdb1b8b"><td id=";OoQ" class="">Vector quality for rare words</td><td id="VBPk" class="">Lower</td><td id="}i?C" class="">Higher</td></tr></tbody></table><p id="1cc89543-0c96-80dd-b40e-d531d2445832" class="">Skip-gram generally performs better with rare words and large datasets, while CBOW is faster and works well with smaller datasets and frequent words<a href="https://how.dev/answers/cbow-vs-skip-gram">2</a>.</p><h2 id="1cc89543-0c96-800d-8c13-ea0c03235210" class=""><strong>Implementing Word2Vec from Scratch</strong></h2><p id="1cc89543-0c96-804f-8667-cba510d21e2e" class="">Let&#x27;s implement both CBOW and Skip-gram models from scratch using NumPy. We&#x27;ll break down the implementation into several key steps.</p><h2 id="1cc89543-0c96-8037-afae-d02ae615d6db" class=""><strong>Step 1: Text Preprocessing and Tokenization</strong></h2><p id="1cc89543-0c96-80f9-a205-e7855d62b93c" class="">First, we need to preprocess our text data and tokenize it:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-809e-a6f7-d27cdb198e5e" class="code"><code class="language-Python">import numpy as np
+import re
+from collections import defaultdict
+
+def tokenize(text):
+    # Convert to lowercase and find all word-like tokens
+    pattern = re.compile(r&#x27;[A-Za-z]+[\w^\&#x27;]*|[\w^\&#x27;]*[A-Za-z]+[\w^\&#x27;]*&#x27;)
+    return pattern.findall(text.lower())
+
+# Example usage
+text = &quot;The wide road shimmered in the hot sun.&quot;
+tokens = tokenize(text)
+print(tokens)  # [&#x27;the&#x27;, &#x27;wide&#x27;, &#x27;road&#x27;, &#x27;shimmered&#x27;, &#x27;in&#x27;, &#x27;the&#x27;, &#x27;hot&#x27;, &#x27;sun&#x27;]</code></pre><h2 id="1cc89543-0c96-809a-8ae3-d8be48d2a4e5" class=""><strong>Step 2: Building Vocabulary and Word Mappings</strong></h2><p id="1cc89543-0c96-80d7-9adc-ca72df9e7026" class="">Next, we need to create mappings between words and their indices:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80f6-a09b-ed35a58e8913" class="code"><code class="language-Python">pythondef build_vocab(tokens):
+    # Count word frequencies
+    word_counts = defaultdict(int)
+    for token in tokens:
+        word_counts[token] += 1
+    
+    # Create word-to-id and id-to-word mappings
+    word_to_id = {}
+    id_to_word = {}
+    
+    for i, (word, count) in enumerate(word_counts.items()):
+        word_to_id[word] = i
+        id_to_word[i] = word
+    
+    return word_to_id, id_to_word, word_counts
+
+word_to_id, id_to_word, word_counts = build_vocab(tokens)
+vocab_size = len(word_to_id)</code></pre><h2 id="1cc89543-0c96-80cb-bb4f-e424197487e1" class=""><strong>Step 3: Generating Training Data</strong></h2><p id="1cc89543-0c96-8072-8f9c-e796761a89bc" class="">We need to generate training data pairs for both CBOW and Skip-gram models:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80ba-a147-f5454f3320d6" class="code"><code class="language-Python">pythondef one_hot_encode(id, vocab_size):
+    &quot;&quot;&quot;Convert an index to a one-hot vector.&quot;&quot;&quot;
+    one_hot = np.zeros(vocab_size)
+    one_hot[id] = 1
+    return one_hot
+
+def generate_training_data_cbow(tokens, word_to_id, window_size, vocab_size):
+    &quot;&quot;&quot;Generate training data for CBOW model.&quot;&quot;&quot;
+    X = []  # Context words (inputs)
+    y = []  # Target words (outputs)
+    n_tokens = len(tokens)
+    
+    for i in range(window_size, n_tokens - window_size):
+        # Get context words
+        context = []
+        for j in range(-window_size, window_size + 1):
+            if j == 0:  # Skip the target word
+                continue
+            context.append(tokens[i + j])
+        
+        # Create input as average of context word vectors
+        X.append([one_hot_encode(word_to_id[word], vocab_size) for word in context])
+        # Target is the center word
+        y.append(one_hot_encode(word_to_id[tokens[i]], vocab_size))
+    
+    return np.array(X), np.array(y)
+
+def generate_training_data_skipgram(tokens, word_to_id, window_size, vocab_size):
+    &quot;&quot;&quot;Generate training data for Skip-gram model.&quot;&quot;&quot;
+    X = []  # Target words (inputs)
+    y = []  # Context words (outputs)
+    n_tokens = len(tokens)
+    
+    for i in range(window_size, n_tokens - window_size):
+        # Target word is the center word
+        target = tokens[i]
+        # Context is the surrounding words
+        for j in range(-window_size, window_size + 1):
+            if j == 0:  # Skip the target word itself
+                continue
+            context = tokens[i + j]
+            X.append(one_hot_encode(word_to_id[target], vocab_size))
+            y.append(one_hot_encode(word_to_id[context], vocab_size))
+    
+    return np.array(X), np.array(y)</code></pre><h2 id="1cc89543-0c96-80ba-aaf9-ecf4f47cdc69" class=""><strong>Step 4: Implementing the Neural Network Models</strong></h2><p id="1cc89543-0c96-80d4-85c1-c843e2f6b3bc" class="">Now, let&#x27;s implement the neural network models for both CBOW and Skip-gram:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80a7-8e25-f8af20b7bfa5" class="code"><code class="language-Python"></code></pre><h2 id="1cc89543-0c96-800d-b72c-c15bcdb2d83e" class=""><strong>Step 5: Training the Models</strong></h2><p id="1cc89543-0c96-80b0-b0c6-c8d55199409b" class="">Let&#x27;s now train both CBOW and Skip-gram models:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80e9-bca3-c7cc86470132" class="code"><code class="language-Python">python# Parameters
+embedding_dim = 50
+window_size = 2
+learning_rate = 0.01
+epochs = 100
+batch_size = 32
+
+# Generate training data for CBOW
+X_cbow, y_cbow = generate_training_data_cbow(tokens, word_to_id, window_size, vocab_size)
+
+# Initialize and train CBOW model
+cbow_model = Word2Vec(vocab_size, embedding_dim, learning_rate)
+cbow_losses = cbow_model.train(X_cbow, y_cbow, epochs, batch_size)
+
+# Generate training data for Skip-gram
+X_skipgram, y_skipgram = generate_training_data_skipgram(tokens, word_to_id, window_size, vocab_size)
+
+# Initialize and train Skip-gram model
+skipgram_model = Word2Vec(vocab_size, embedding_dim, learning_rate)
+skipgram_losses = skipgram_model.train(X_skipgram, y_skipgram, epochs, batch_size)</code></pre><h2 id="1cc89543-0c96-80d4-9f21-cc8176b0c344" class=""><strong>Step 6: Using the Trained Models</strong></h2><p id="1cc89543-0c96-8011-9911-f1d42ef3491f" class="">After training, we can use the models to find similar words:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-8027-a504-cb6aaa4ee09d" class="code"><code class="language-Python">python# Get word vectors
+word = &quot;road&quot;
+cbow_vector = cbow_model.get_word_vector(word, word_to_id)
+skipgram_vector = skipgram_model.get_word_vector(word, word_to_id)
+
+print(f&quot;CBOW vector for &#x27;{word}&#x27;:&quot;, cbow_vector)
+print(f&quot;Skip-gram vector for &#x27;{word}&#x27;:&quot;, skipgram_vector)
+
+# Find similar words
+print(f&quot;\nWords similar to &#x27;{word}&#x27; using CBOW:&quot;)
+similar_words_cbow = cbow_model.most_similar(word, word_to_id, id_to_word, top_n=3)
+for similar_word, similarity in similar_words_cbow:
+    print(f&quot;{similar_word}: {similarity:.4f}&quot;)
+
+print(f&quot;\nWords similar to &#x27;{word}&#x27; using Skip-gram:&quot;)
+similar_words_skipgram = skipgram_model.most_similar(word, word_to_id, id_to_word, top_n=3)
+for similar_word, similarity in similar_words_skipgram:
+    print(f&quot;{similar_word}: {similarity:.4f}&quot;)</code></pre><h2 id="1cc89543-0c96-8085-a708-e708ef1e49b1" class=""><strong>Step 7: Visualizing Word Embeddings</strong></h2><p id="1cc89543-0c96-8041-9c57-c03b6e0987bc" class="">We can visualize the word embeddings using dimensionality reduction techniques like PCA:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-802f-b21a-f860ed06e9be" class="code"><code class="language-Python">pythonimport matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+def visualize_embeddings(model, word_to_id, id_to_word):
+    # Get word vectors for all words
+    word_vectors = model.W1
+    
+    # Reduce dimensionality to 2D using PCA
+    pca = PCA(n_components=2)
+    word_vectors_2d = pca.fit_transform(word_vectors)
+    
+    # Plot the points
+    plt.figure(figsize=(10, 8))
+    plt.scatter(word_vectors_2d[:, 0], word_vectors_2d[:, 1], alpha=0.5)
+    
+    # Add labels for each point
+    for i, (x, y) in enumerate(word_vectors_2d):
+        plt.annotate(id_to_word[i], (x, y), fontsize=10)
+    
+    plt.title(&#x27;Word Embeddings Visualization&#x27;)
+    plt.xlabel(&#x27;PC1&#x27;)
+    plt.ylabel(&#x27;PC2&#x27;)
+    plt.grid(True)
+    plt.show()
+
+# Visualize embeddings
+visualize_embeddings(skipgram_model, word_to_id, id_to_word)</code></pre><h2 id="1cc89543-0c96-8039-9341-cfa6fa5cc4b4" class=""><strong>Advanced Optimizations</strong></h2><h2 id="1cc89543-0c96-80d7-a3f1-f238e93e14df" class=""><strong>Negative Sampling</strong></h2><p id="1cc89543-0c96-809c-bee2-f60a60e32b95" class="">Training Word2Vec can be computationally expensive, especially for large vocabularies. Negative sampling is a technique that improves training efficiency by updating only a small subset of output weights in each iteration<a href="https://nathan.fun/posts/2018-03-22/word2vec-from-scratch-with-python-and-numpy/">11</a>.</p><p id="1cc89543-0c96-80da-ab4a-f68e846d9c6b" class="">Instead of updating all weights in the output layer, negative sampling:</p><ol type="1" id="1cc89543-0c96-80ef-af24-f396ed1a96fd" class="numbered-list" start="1"><li>Updates weights for the actual target word (positive sample)</li></ol><ol type="1" id="1cc89543-0c96-80f4-b572-d2898ebf4f38" class="numbered-list" start="2"><li>Updates weights for a few randomly selected non-target words (negative samples)</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-8018-94f4-d64001aa0245" class="code"><code class="language-Python">`pythondef negative_sampling(positive_word_id, vocab_size, n_negative=5, word_counts=None):
+    &quot;&quot;&quot;Generate negative samples.&quot;&quot;&quot;
+    *# Use word frequencies for sampling if available*
+    if word_counts:
+        word_freqs = np.array([word_counts.get(id_to_word[i], 0) for i in range(vocab_size)])
+        word_freqs = word_freqs ** 0.75  *# Raise to power 0.75 as in the original Word2Vec*
+        word_freqs = word_freqs / np.sum(word_freqs)
+    else:
+        word_freqs = np.ones(vocab_size) / vocab_size
+    
+    *# Sample negative words*
+    negative_samples = []
+    while len(negative_samples) &lt; n_negative:
+        sample = np.random.choice(vocab_size, p=word_freqs)
+        if sample != positive_word_id and sample not in negative_samples:
+            negative_samples.append(sample)
+    
+    return negative_samples`
+
+## **Hierarchical Softmax**</code></pre><p id="1cc89543-0c96-809f-81a1-d338d84690f2" class="">Another optimization technique is hierarchical softmax, which uses a binary tree structure to represent the output layer, reducing the computational complexity from O(V) to O(log V), where V is the vocabulary size<a href="https://jaketae.github.io/study/word2vec/">5</a>.</p><h2 id="1cc89543-0c96-8073-abe8-c3fa6be64724" class=""><strong>Practical Applications of Word2Vec</strong></h2><p id="1cc89543-0c96-804c-81ce-c8adacebb244" class="">Word2Vec has numerous applications across various domains:</p><h2 id="1cc89543-0c96-8023-ab5f-d00ca79fc7fe" class=""><strong>Natural Language Processing</strong></h2><ul id="1cc89543-0c96-80fb-9eae-e13bbf38e0a6" class="bulleted-list"><li style="list-style-type:disc">Sentiment analysis</li></ul><ul id="1cc89543-0c96-80d6-abcc-ddf7eccb8930" class="bulleted-list"><li style="list-style-type:disc">Named entity recognition</li></ul><ul id="1cc89543-0c96-80b6-bebd-c778d8095d14" class="bulleted-list"><li style="list-style-type:disc">Machine translation</li></ul><ul id="1cc89543-0c96-80d7-9454-d52fe2379dd1" class="bulleted-list"><li style="list-style-type:disc">Part-of-speech tagging<a href="https://substack.com/home/post/p-143275665">1</a></li></ul><h2 id="1cc89543-0c96-80c5-90b1-ca01ec3b975e" class=""><strong>Information Retrieval</strong></h2><ul id="1cc89543-0c96-8045-bb3e-ea4bf1006cf0" class="bulleted-list"><li style="list-style-type:disc">Enhancing search engines&#x27; understanding of user queries</li></ul><ul id="1cc89543-0c96-80cd-9e39-d0a2dc67a0e0" class="bulleted-list"><li style="list-style-type:disc">Improving document similarity calculations<a href="https://substack.com/home/post/p-143275665">1</a></li></ul><h2 id="1cc89543-0c96-8059-ba2d-ed06d989fb2f" class=""><strong>Recommendation Systems</strong></h2><ul id="1cc89543-0c96-805f-8f36-e6fdbb04b589" class="bulleted-list"><li style="list-style-type:disc">Capturing semantic similarities for product recommendations</li></ul><ul id="1cc89543-0c96-80ba-9d06-ce02aad9f49c" class="bulleted-list"><li style="list-style-type:disc">Content-based filtering in media platforms<a href="https://substack.com/home/post/p-143275665">1</a></li></ul><h2 id="1cc89543-0c96-808f-afb4-c15156ad6822" class=""><strong>Text Generation</strong></h2><ul id="1cc89543-0c96-80c3-a661-da6d6736e1ea" class="bulleted-list"><li style="list-style-type:disc">Providing semantic context for language generation models</li></ul><ul id="1cc89543-0c96-80c0-b050-f6a893d4d17b" class="bulleted-list"><li style="list-style-type:disc">Creating more coherent and contextually relevant text<a href="https://substack.com/home/post/p-143275665">1</a></li></ul><h2 id="1cc89543-0c96-80c6-a45f-df96f94f6665" class=""><strong>Limitations of Word2Vec</strong></h2><p id="1cc89543-0c96-805d-992b-f6076974379b" class="">Despite its usefulness, Word2Vec has several limitations:</p><ol type="1" id="1cc89543-0c96-80dd-98fb-c552b5bf6276" class="numbered-list" start="1"><li><strong>Static Word Representations</strong>: Word2Vec assigns a single vector to each word, regardless of context, which doesn&#x27;t account for polysemy (words with multiple meanings)<a href="https://substack.com/home/post/p-143275665">1</a>.</li></ol><ol type="1" id="1cc89543-0c96-80b9-a2a0-f2600d61912f" class="numbered-list" start="2"><li><strong>Requires Large Corpus</strong>: To learn good quality embeddings, Word2Vec needs a large amount of training data.</li></ol><ol type="1" id="1cc89543-0c96-80ca-9e5e-dee1e8a26b04" class="numbered-list" start="3"><li><strong>Out-of-Vocabulary Words</strong>: Traditional Word2Vec cannot handle words not seen during training.</li></ol><ol type="1" id="1cc89543-0c96-800f-b210-facfc76426b1" class="numbered-list" start="4"><li><strong>No Contextual Understanding</strong>: Unlike more recent models like BERT, Word2Vec doesn&#x27;t capture context-dependent meanings of words.</li></ol><h2 id="1cc89543-0c96-807d-b628-fc6c87743f6c" class=""><strong>Conclusion</strong></h2><p id="1cc89543-0c96-80f8-9472-d46b74e8158d" class="">Word2Vec represents a fundamental advance in natural language processing by providing a method to represent words as dense vectors that capture semantic meaning. The two main architectures, CBOW and Skip-gram, offer different approaches to learning these representations, with their own strengths and weaknesses.</p><p id="1cc89543-0c96-8005-8e04-e49cd9e31fb7" class="">Implementing Word2Vec from scratch helps deepen understanding of the underlying principles and provides flexibility to customize the model for specific applications. While more advanced models like BERT and GPT have since been developed, Word2Vec remains a valuable tool in the NLP toolkit and continues to be widely used for its simplicity and effectiveness.</p><p id="1cc89543-0c96-80c9-9b7a-d3f1923884b0" class="">By exploring both the theoretical foundations and practical implementation of Word2Vec, we gain insights into how machines can begin to understand and process human language in meaningful ways.</p><p id="1cc89543-0c96-806c-8604-d8db0f3d9344" class="">
+</p><p id="1cc89543-0c96-80d2-949b-e6b5a28b4d8c" class="">
+</p><p id="1cc89543-0c96-8078-a3b6-cb6864211f82" class="">
+</p><h2 id="1cc89543-0c96-80c8-905b-fb618cc6c633" class="">clear back propagation</h2><p id="1cc89543-0c96-8019-985d-dbc2f0a6f73c" class="">
+</p><p id="1cc89543-0c96-8086-a9bb-e22b67a3b981" class="">We&#x27;re going to understand this code from your model:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80e3-8fe6-ff7c905a0a99" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+# Backpropagation
+grad = (y_pred - y_true) / y_true.shape[0]
+dW2 = np.dot(self.h.T, grad)
+dW1 = np.dot(X.T, np.dot(grad, self.W2.T))
+
+</code></pre><hr id="1cc89543-0c96-806c-b6e3-c8ad512d71ec"/><h2 id="1cc89543-0c96-8058-8e79-c47379819b13" class="">📌 Before we begin, a simple picture of the model</h2><p id="1cc89543-0c96-80df-9988-e8dd2a43b8f9" class="">You have a <strong>tiny neural network</strong> like this:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-8009-a287-caca5ae338c0" class="code"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">scss
+CopyEdit
+INPUT WORDS (X)
+     ↓
+   W1 (matrix)      ← Weights from input to hidden layer
+     ↓
+HIDDEN LAYER (h)
+     ↓
+   W2 (matrix)      ← Weights from hidden to output layer
+     ↓
+  OUTPUT (u)
+     ↓
+SOFTMAX → y_pred    ← Final prediction (probabilities of each word)
+
+</code></pre><p id="1cc89543-0c96-8093-bc2e-d255d2f0eae7" class="">You compare the prediction (<code>y_pred</code>) with the correct answer (<code>y_true</code>) and then <strong>backpropagate</strong> to update <code>W1</code> and <code>W2</code>.</p><hr id="1cc89543-0c96-80f3-b264-c6fcb93300bc"/><h2 id="1cc89543-0c96-80fb-9f83-cddde6e948dc" class="">🧩 Let&#x27;s explain each line very simply</h2><hr id="1cc89543-0c96-804b-b37c-d71f29b99dfb"/><h3 id="1cc89543-0c96-8067-b107-ee2f359e725a" class="">✅ Line 1: Gradient of the loss</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80f9-9701-ca7cbc5e5711" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+grad = (y_pred - y_true) / y_true.shape[0]
+
+</code></pre><h3 id="1cc89543-0c96-804d-b5d5-ede1e0ad4e4c" class="">What this does:</h3><ul id="1cc89543-0c96-80f2-9c8a-e9056cb20ef3" class="bulleted-list"><li style="list-style-type:disc">Compares the model&#x27;s prediction to the correct answer</li></ul><ul id="1cc89543-0c96-80fe-8000-e9a508fc57a5" class="bulleted-list"><li style="list-style-type:disc">If the model is wrong, this tells <strong>how wrong</strong> it is, and in what direction to adjust</li></ul><h3 id="1cc89543-0c96-8039-a178-fe83e5894f64" class="">Example:</h3><p id="1cc89543-0c96-8074-9a16-e511922fc87e" class="">Let’s say the model predicted:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-80f0-bed1-c8be02a5beb0" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+y_pred = [0.1, 0.7, 0.2]  # It thinks word 2 is most likely
+
+</code></pre><p id="1cc89543-0c96-80ac-955f-ea347e57b5ba" class="">And the correct answer (one-hot):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-8088-a1da-dff36e656982" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+y_true = [0, 1, 0]  # Correct word is at index 1
+
+</code></pre><p id="1cc89543-0c96-80e5-b0b8-f07caa4349f8" class="">Then:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-8094-bcdc-c2487ebfb714" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+grad = y_pred - y_true = [0.1, -0.3, 0.2]
+
+</code></pre><p id="1cc89543-0c96-803c-84b6-d2d3cfd86d1e" class="">This means:</p><ul id="1cc89543-0c96-8029-ac42-e5b7c587820d" class="bulleted-list"><li style="list-style-type:disc">The model gave <strong>too much</strong> probability to index 2 → subtract</li></ul><ul id="1cc89543-0c96-8043-9212-e9b9a8d3ce22" class="bulleted-list"><li style="list-style-type:disc">The model gave <strong>too little</strong> to index 1 → increase</li></ul><p id="1cc89543-0c96-8030-8a89-e276ead9b23e" class="">✅ So <code>grad</code> shows how to correct the prediction.</p><hr id="1cc89543-0c96-8064-8e8e-c07b2c8fd514"/><h3 id="1cc89543-0c96-80fd-9686-c86872555228" class="">✅ Line 2: Update for W2</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-803d-863f-f2d69f9c63cb" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+dW2 = np.dot(self.h.T, grad)
+
+</code></pre><h3 id="1cc89543-0c96-8093-9959-dc21c365510d" class="">What this does:</h3><ul id="1cc89543-0c96-8023-8716-e979bb7c1632" class="bulleted-list"><li style="list-style-type:disc">This says: <em>&quot;How did the hidden layer cause the wrong prediction?&quot;</em></li></ul><ul id="1cc89543-0c96-80b5-b501-c7145c2ed486" class="bulleted-list"><li style="list-style-type:disc">It calculates how to update <code>W2</code> (from hidden to output)</li></ul><p id="1cc89543-0c96-80f7-98a1-cbec98360cac" class="">📌 <code>self.h</code> is the hidden layer. <code>grad</code> is the error.<br/>We multiply them to see how much <br/><strong>each hidden unit</strong> contributed to the error at each word.</p><hr id="1cc89543-0c96-8054-aaef-caf8995945c2"/><h3 id="1cc89543-0c96-8044-9a49-ff6e075a08b5" class="">✅ Line 3: Update for W1</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1cc89543-0c96-800b-87a3-e4293e1cc4be" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">python
+CopyEdit
+dW1 = np.dot(X.T, np.dot(grad, self.W2.T))
+
+</code></pre><h3 id="1cc89543-0c96-80bd-a6bc-dfba8d733f16" class="">What&#x27;s going on here:</h3><p id="1cc89543-0c96-8034-8827-cfa4d3d306f3" class="">We want to update <code>W1</code> (input → hidden), so we ask:</p><ul id="1cc89543-0c96-80c3-b5f7-eecb3907e022" class="bulleted-list"><li style="list-style-type:disc">How did the <strong>input</strong> cause the mistake?</li></ul><ul id="1cc89543-0c96-808e-a8d7-e2e5eda646bc" class="bulleted-list"><li style="list-style-type:disc">We do this in two parts:<ol type="1" id="1cc89543-0c96-8059-80f4-ffaf03b570f0" class="numbered-list" start="1"><li><code>np.dot(grad, self.W2.T)</code><p id="1cc89543-0c96-8072-9543-ec679233fc4e" class="">→ Backpropagate the error from output back to hidden layer</p></li></ol><ol type="1" id="1cc89543-0c96-80c2-ab6d-dc7dc5bd85da" class="numbered-list" start="2"><li><code>np.dot(X.T, ...)</code><p id="1cc89543-0c96-8059-b0b4-f935a9f6a5d5" class="">→ Connect that error with the input to find how <code>W1</code> should change</p></li></ol></li></ul><p id="1cc89543-0c96-805e-93b4-f1a349649841" class="">🧠 It’s like tracing the error <strong>backwards through the network</strong>.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
