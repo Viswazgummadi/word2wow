@@ -1,0 +1,71 @@
+name: Sync Notion to GitHub Pages
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install @notionhq/client notion-to-md
+        
+      - name: Export Notion content
+        run: |
+          cat > export.js << 'EOF'
+          const { Client } = require("@notionhq/client");
+          const { NotionToMarkdown } = require("notion-to-md");
+          const fs = require('fs');
+          const path = require('path');
+          
+          const notion = new Client({ auth: process.env.NOTION_TOKEN });
+          const n2m = new NotionToMarkdown({ notionClient: notion });
+          
+          async function exportPage(pageId, outputPath) {
+            try {
+              const mdBlocks = await n2m.pageToMarkdown(pageId);
+              const mdString = n2m.toMarkdownString(mdBlocks);
+              
+              fs.writeFileSync(outputPath, mdString, 'utf8');
+              console.log(`Exported ${outputPath}`);
+              return true;
+            } catch (error) {
+              console.error(`Error exporting ${pageId}:`, error);
+              return false;
+            }
+          }
+          
+          async function main() {
+            // Export main page as index.md
+            await exportPage(process.env.NOTION_PAGE_ID, './index.md');
+            
+            // You can add more pages here as needed
+          }
+          
+          main();
+          EOF
+          node export.js
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PAGE_ID: ${{ secrets.NOTION_PAGE_ID }}
+          
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Update content from Notion" || echo "No changes to commit"
+          git push
