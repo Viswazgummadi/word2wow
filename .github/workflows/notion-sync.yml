@@ -18,7 +18,10 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm install @notionhq/client notion-to-md
+        run: npm install @notionhq/client notion-to-md@3.1.7
+        
+      - name: Debug Package Versions
+        run: npm list @notionhq/client notion-to-md --depth=0
         
       - name: Export Notion content
         run: |
